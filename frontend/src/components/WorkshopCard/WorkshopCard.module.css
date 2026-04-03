@@ -1,0 +1,92 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.cardHeader {
+    padding: var(--spacing-4);
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.levelBadge {
+    display: inline-block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background-color: var(--color-border);
+    color: var(--color-text-light);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-2);
+}
+
+.title {
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin: 0;
+}
+
+.cardBody {
+    padding: var(--spacing-4);
+    flex: 1;
+}
+
+.metaData {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.date,
+.instructor {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.excerpt {
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+}
+
+.cardFooter {
+    padding: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-background);
+    margin-top: auto;
+}
+
+.registerBtn {
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-primary);
+    color: #fff;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: background-color var(--transition-fast);
+}
+
+.registerBtn:hover {
+    background-color: var(--color-primary-hover);
+}

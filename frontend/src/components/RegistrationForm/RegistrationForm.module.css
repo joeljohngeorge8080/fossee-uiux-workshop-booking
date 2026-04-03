@@ -1,0 +1,110 @@
+.formContainer {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-sm);
+}
+
+.formTitle {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-4);
+    color: var(--color-text);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.formGroup {
+    margin-bottom: var(--spacing-4);
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-2);
+}
+
+.required {
+    color: var(--color-error);
+}
+
+.input,
+.select,
+.textarea {
+    width: 100%;
+    padding: var(--spacing-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.inputError,
+.selectError,
+.textareaError {
+    border-color: var(--color-error);
+}
+
+.inputError:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.errorMessage {
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-1);
+}
+
+.submitBtn {
+    width: 100%;
+    padding: var(--spacing-3);
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius);
+    margin-top: var(--spacing-4);
+    transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.submitBtn:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
+
+.submitBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.successMessage {
+    padding: var(--spacing-6);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-success);
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+}
+
+.successMessage h3 {
+    color: var(--color-success);
+    margin-bottom: var(--spacing-2);
+    font-size: var(--font-size-xl);
+}
+
+.successMessage p {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-4);
+}
