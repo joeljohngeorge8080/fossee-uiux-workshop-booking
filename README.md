@@ -1,167 +1,160 @@
 # LearnForge — FOSSEE UI/UX Screening Task
 
-A UI/UX improvement of an existing React-based workshop booking site. The original site had the core structure in place — pages, routing, and a registration form — but the experience felt bare. This submission focuses on making the interface cleaner, more interactive, and easier to use without touching the backend or adding unnecessary complexity.
+This is my submission for the FOSSEE UI/UX screening task. The base project had the routing and pages already set up, but it felt pretty bare to use — no way to find a specific workshop, no feedback on form errors until you submit, nothing. So I focused on making it actually usable.
 
 ---
 
-## Before vs After
+## What I Changed (Before vs After)
 
 | Area | Before | After |
 |---|---|---|
-| Workshop list | Static grid, no way to find a specific workshop | Real-time search + level filter pills |
-| Empty states | Generic "no workshops" text | Illustrated empty state with a reset button |
-| Form validation | Errors shown only on submit | Inline errors on blur, real-time feedback on change |
-| Loading states | No feedback during data fetch | Spinner with `aria-live` for screen readers |
-| Urgency cues | None | "🔥 3 left" chip and sold-out badge on cards |
-| Navigation | Plain links | Active route highlighting on Navbar |
-| Card layout | Uniform height regardless of content | Clamped excerpt (3 lines) keeps grid visually consistent |
-| Accessibility | Minimal | `aria-pressed`, `aria-label`, `role`, semantic HTML throughout |
+| Workshop list | Static grid, no filtering | Search bar + level filter pills |
+| Empty states | Just a plain text message | Icon, message, and a reset button |
+| Form validation | Errors only on submit | Shows errors on blur, clears when fixed |
+| Loading | Nothing while fetching | Spinner with screen reader support |
+| Urgency cues | None | "🔥 3 left" chip and sold-out badge |
+| Navigation | Plain links | Active page highlighted in Navbar |
+| Card height | Inconsistent | Excerpt clamped to 3 lines |
+| Accessibility | Minimal | `aria-*` attributes + semantic HTML throughout |
 
 ---
 
 ## Design Principles
 
-A few ideas guided every decision:
+A few things I kept reminding myself:
 
-- **Show, don't tell** — Instead of writing "few spots left" in a tooltip, show a 🔥 chip directly on the card so users notice it without extra effort.
-- **Progressive disclosure** — The search bar and filter pills only appear after the workshops load. No toolbar cluttering the screen during the loading state.
-- **Feedback at the right moment** — Form fields validate on blur (not on every keystroke) so users aren't interrupted while typing. The error clears the moment the field becomes valid.
-- **Don't add what you don't need** — No animation libraries, no global state, no extra hooks. If something could be done with a `useMemo` and a CSS transition, that's how it was done.
+- **Make things obvious** — If spots are running low, show it on the card. Don't hide it behind a tooltip or a separate page.
+- **Don't show everything at once** — The toolbar (search + filters) only shows up after workshops load. No point cluttering the screen while it's still loading.
+- **Validate at the right time** — Showing errors while someone is still typing is annoying. So errors show up when you leave a field, and go away the moment you fix it.
+- **Keep it simple** — I didn't add any animation libraries or global state. If a `useMemo` and a CSS transition can do the job, that's enough.
 
 ---
 
 ## Responsiveness
 
-The layout uses CSS Grid with breakpoint-based column counts:
+Used CSS Grid with breakpoints:
 
-- **Mobile (< 640px):** Single column — cards stack vertically, toolbar wraps into two rows
-- **Tablet (640px–1023px):** Two-column card grid, toolbar fits on one row
+- **Mobile (< 640px):** Cards in a single column, toolbar wraps to two rows
+- **Tablet (640–1023px):** Two-column grid, toolbar on one row
 - **Desktop (≥ 1024px):** Three-column grid
 
-The search bar has a `max-width` so it doesn't stretch awkwardly on wide screens. Filter pills use `flex-wrap` so they wrap naturally on smaller viewports. The workshop details page switches between a single-column stack and a two-column info+form layout using a CSS Grid breakpoint — no JavaScript involved.
+The search input has a `max-width` so it doesn't look weird on big screens. Filter pills use `flex-wrap` so they wrap naturally. The workshop details page switches from a single column to a side-by-side info+form layout at 768px — all done in CSS, no JS.
 
 ---
 
 ## Trade-offs
 
-**Design vs. performance:**
-- Workshop filtering uses `useMemo` to avoid recomputing on every render. Since the dataset is small (4 workshops), this is a minor win, but the pattern scales cleanly if the list grows.
-- Cards use `-webkit-line-clamp` to cap excerpt height at 3 lines. This is a visual trade-off: some content is hidden, but card heights stay consistent across the grid, which looks much better than jagged columns.
+A couple of decisions I made and why:
 
-**Simplicity vs. features:**
-- Sorting (by date, price) was intentionally skipped. Adding it would have meant either a more complex filter bar or a dropdown — both felt like overkill for 4 workshops. The task asked for meaningful improvements, not every possible feature.
-- The search matches against title, instructor, and excerpt text. Fuzzy search (e.g., Fuse.js) would be more forgiving of typos but adds a dependency. The current `toLowerCase().includes()` approach is fast, readable, and dependency-free.
+- **Consistent card height vs showing full content** — I used `-webkit-line-clamp` to cut card excerpts at 3 lines. Some content gets hidden, but the grid looks way better when all cards are the same height. Full description is on the details page anyway.
+- **Simple search vs fuzzy search** — Search uses `toLowerCase().includes()`. It won't handle typos, but it's fast, readable, and adds zero dependencies. For 4 workshops, it's more than enough.
+- **Skipped sorting** — Adding sort-by-date or sort-by-price would have needed a dropdown or extra state. It felt like over-engineering for this scope, so I left it out.
+- **`useMemo` for filtering** — Small win on a tiny dataset, but it's the right habit and the pattern works cleanly if the list ever grows.
 
 ---
 
 ## Challenges
 
-**The trickiest part was the form validation logic.**
+The hardest part was the form validation hook.
 
-The original hook had a stale closure bug — `handleChange` closed over the initial `values` snapshot, so rapid edits could lose earlier changes. The fix was to use functional `setValues(prev => ...)` updates and a `useRef` to hold the latest `validate` function. This meant the `handleChange` and `handleBlur` callbacks could stay stable (no deps array churn) while always reading fresh state.
+The original `handleChange` had a stale closure issue — it captured the `values` from when the component first rendered, so quick edits could overwrite each other. I fixed it by switching to functional `setValues(prev => ...)` updates and storing the validate function in a `useRef` so the callbacks don't need to be re-created on every render.
 
-The same pattern resolved the error-clearing issue: errors update reactively inside the same state setter call, so there's never a frame where the new value is set but the old error is still visible.
+The side effect of that fix was that error clearing also became reliable — errors update inside the same state setter call, so you never see a frame where the value is updated but a stale error is still showing.
 
 ---
 
 ## Features Added
 
-### Workshop List (`/`)
-- **Real-time search** — filters by title, instructor, and excerpt as you type
-- **Level filter pills** — All / Beginner / Intermediate / Advanced, combinable with search
-- **Clear button** — appears inside the search input only when there's text
-- **"No workshops found" empty state** — with a fade-in animation and a "Reset filters" button that clears both search and filter at once
+**Workshop List**
+- Real-time search — matches title, instructor, and excerpt
+- Level filter pills (All / Beginner / Intermediate / Advanced) — works together with search
+- Clear (✕) button inside the search input
+- "No workshops found" state — icon, message, fade-in animation, and a reset button
 
-### Workshop Cards
-- **Urgency chip** — "🔥 N left" shown when ≤ 5 spots remain
-- **Sold-out badge** — muted chip + disabled CTA button when spots = 0
-- **Hover lift** — subtle `translateY` + border highlight on hover
-- **Consistent height** — 3-line excerpt clamp keeps the grid aligned
+**Workshop Cards**
+- "🔥 N left" chip when ≤ 5 spots remain
+- Sold-out badge + disabled CTA
+- Subtle hover lift animation
+- 3-line excerpt clamp for consistent card heights
 
-### Workshop Details (`/workshop/:id`)
-- **Meta cards** — date, instructor, duration, and price each in a distinct card block
-- **Spots warning banner** — contextual alert when seats are running low
-- **Not found state** — graceful message + back link if the ID doesn't exist
+**Workshop Details**
+- Meta info (date, instructor, duration, price) laid out in individual cards
+- Warning banner when spots are low
+- Graceful "not found" page with a back link
 
-### Registration Form
-- **Blur validation** — errors appear after leaving a field, not during typing
-- **Real-time clearing** — error disappears the moment input becomes valid
-- **Submit guard** — all fields are validated before the form submits; shows a loading state during submission
-- **Success toast** — confirmation message after successful registration
+**Registration Form**
+- Blur validation (not on keystroke)
+- Errors clear in real time once fixed
+- Form locked during submission with a loading state
+- Success toast after registration
 
-### Accessibility
+**Accessibility**
 - `aria-pressed` on filter buttons
-- `aria-live="polite"` on loading and empty states
-- `role="search"` and `role="group"` on toolbar sections
-- `aria-label` on icon-only buttons and icon-only links
-- Fully keyboard-navigable (tab order, focus rings, `tabIndex=-1` on disabled CTAs)
+- `aria-live="polite"` on loading/empty states
+- `role="search"` and `role="group"` on the toolbar
+- Keyboard-friendly — focus rings, correct tab order, `tabIndex=-1` on disabled buttons
 
 ---
 
 ## Tech Stack
 
-| Tool | Purpose |
+| Tool | Why |
 |---|---|
-| React 18 | UI library |
-| React Router v6 | Client-side routing |
-| CSS Modules | Scoped component styles |
-| Vite | Dev server and build tool |
-| No UI library | All components built from scratch |
+| React 18 | UI |
+| React Router v6 | Routing |
+| CSS Modules | Scoped styles without a CSS-in-JS library |
+| Vite | Fast dev server |
+| No UI component library | Everything built from scratch |
 
 ---
 
-## Setup
+## Running Locally
 
 ```bash
-# Clone the repo
 git clone <repo-url>
 cd FOSSEE/frontend
 
-# Install dependencies
 npm install
-
-# Start the dev server
 npm run dev
 ```
 
-The app runs at `http://localhost:5173` by default.
+Opens at `http://localhost:5173`.
 
 ---
 
 ## Screenshots
 
-### Workshop List — Default State
-![Workshop list showing search bar, filter pills, and all workshop cards](./screenshots/workshop-list.png)
+### Default State
+![All workshops shown with search and filter toolbar](./screenshots/workshop-list.png)
 
-### Real-time Search in Action
-![Workshop list filtered by search query "react"](./screenshots/search-filtered.png)
+### Search Filtered
+![Search results for "react"](./screenshots/search-filtered.png)
 
-### Empty State (No Results)
-![Empty state shown when no workshops match the search and filter](./screenshots/empty-state.png)
+### Empty State
+![No results found view](./screenshots/empty-state.png)
 
-### Workshop Details Page
-![Workshop detail page with meta cards and registration form side by side](./screenshots/workshop-details.png)
+### Workshop Details
+![Details page with meta cards and registration form](./screenshots/workshop-details.png)
 
-> **Note:** Screenshots are from the live dev server. Drop images into a `/screenshots` folder and the paths above will resolve.
+> Add images to a `/screenshots` folder and the paths above will work.
 
 ---
 
 ## Project Structure
 
 ```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── Layout/          # App shell (Navbar + main content wrapper)
-│   │   ├── Navbar/          # Navigation with active route highlight
-│   │   ├── WorkshopCard/    # Card component with badge, urgency chip, CTA
-│   │   ├── RegistrationForm/# Controlled form with blur validation
-│   │   ├── StatusMessage/   # Generic success/error message block
-│   │   └── Toast/           # Transient notification after form submit
-│   ├── hooks/
-│   │   └── useFormValidation.js  # Form state + validation hook
-│   ├── pages/
-│   │   ├── WorkshopList/    # Search, filter, and card grid
-│   │   └── WorkshopDetails/ # Workshop info + registration form
-│   └── styles/              # Global CSS tokens (colours, spacing, shadows)
+frontend/src/
+├── components/
+│   ├── Layout/           # App shell
+│   ├── Navbar/           # Nav with active route highlight
+│   ├── WorkshopCard/     # Card with badge, chip, CTA
+│   ├── RegistrationForm/ # Form with validation
+│   ├── StatusMessage/    # Success/error block
+│   └── Toast/            # Post-submit notification
+├── hooks/
+│   └── useFormValidation.js
+├── pages/
+│   ├── WorkshopList/     # Search + filter + grid
+│   └── WorkshopDetails/  # Info + registration
+└── styles/               # Global CSS tokens
 ```
