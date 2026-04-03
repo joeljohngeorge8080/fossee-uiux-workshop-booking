@@ -3,76 +3,91 @@ import { Link, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
-    { name: 'Workshops',   path: '/' },
-    { name: 'My Bookings', path: '/bookings' },
-    { name: 'About',       path: '/about' },
+  { label: 'Workshops',   path: '/' },
+  { label: 'My Bookings', path: '/bookings' },
+  { label: 'About',       path: '/about' },
 ];
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const location = useLocation();
-    const navRef = useRef(null);
-    const hamburgerRef = useRef(null);
-    const closeMenu = useCallback(() => setIsOpen(false), []);
+  const [open, setOpen] = useState(false);
+  const location  = useLocation();
+  const navRef    = useRef(null);
+  const btnRef    = useRef(null);
 
-    useEffect(() => { closeMenu(); }, [location.pathname, closeMenu]);
+  const close = useCallback(() => setOpen(false), []);
 
-    useEffect(() => {
-        if (!isOpen) return;
-        const handleKey = (e) => {
-            if (e.key === 'Escape') { closeMenu(); hamburgerRef.current?.focus(); }
-        };
-        document.addEventListener('keydown', handleKey);
-        return () => document.removeEventListener('keydown', handleKey);
-    }, [isOpen, closeMenu]);
+  /* Close on route change */
+  useEffect(() => { close(); }, [location.pathname, close]);
 
-    useEffect(() => {
-        if (!isOpen) return;
-        const handleOutside = (e) => {
-            if (navRef.current && !navRef.current.contains(e.target)) closeMenu();
-        };
-        document.addEventListener('mousedown', handleOutside);
-        return () => document.removeEventListener('mousedown', handleOutside);
-    }, [isOpen, closeMenu]);
+  /* Close on Escape — return focus to hamburger */
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape') { close(); btnRef.current?.focus(); } };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, close]);
 
-    return (
-        <nav className={styles.navbar} ref={navRef} aria-label="Main navigation">
-            <div className={styles.navContainer}>
-                <Link to="/" className={styles.logo} onClick={closeMenu}>
-                    Learn<span className={styles.accent}>Forge</span>
-                </Link>
-                <button
-                    ref={hamburgerRef}
-                    className={`${styles.hamburger} ${isOpen ? styles.active : ''}`}
-                    onClick={() => setIsOpen((p) => !p)}
-                    aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-                    aria-expanded={isOpen}
-                    aria-controls="nav-menu"
+  /* Close on click outside */
+  useEffect(() => {
+    if (!open) return;
+    const onOutside = (e) => { if (navRef.current && !navRef.current.contains(e.target)) close(); };
+    document.addEventListener('mousedown', onOutside);
+    return () => document.removeEventListener('mousedown', onOutside);
+  }, [open, close]);
+
+  return (
+    <nav className={styles.nav} ref={navRef} aria-label="Main navigation">
+      <div className={styles.inner}>
+
+        <Link to="/" className={styles.logo} onClick={close}>
+          Learn<span className={styles.accent}>Forge</span>
+        </Link>
+
+        {/* Hamburger button — visible only on mobile */}
+        <button
+          ref={btnRef}
+          className={`${styles.hamburger} ${open ? styles.hamburgerOpen : ''}`}
+          onClick={() => setOpen(p => !p)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="nav-links"
+        >
+          <span className={styles.bar} />
+          <span className={styles.bar} />
+          <span className={styles.bar} />
+        </button>
+
+        {/* Nav links */}
+        <ul
+          id="nav-links"
+          className={`${styles.links} ${open ? styles.linksOpen : ''}`}
+          role="list"
+        >
+          {NAV_LINKS.map(({ label, path }) => {
+            const active = location.pathname === path;
+            return (
+              <li key={label}>
+                <Link
+                  to={path}
+                  className={`${styles.link} ${active ? styles.linkActive : ''}`}
+                  onClick={close}
+                  aria-current={active ? 'page' : undefined}
                 >
-                    <span className={styles.bar} />
-                    <span className={styles.bar} />
-                    <span className={styles.bar} />
-                </button>
-                <ul id="nav-menu" className={`${styles.navMenu} ${isOpen ? styles.activeMenu : ''}`} role="list">
-                    {NAV_LINKS.map((link) => (
-                        <li key={link.name} className={styles.navItem} role="listitem">
-                            <Link
-                                to={link.path}
-                                className={`${styles.navLink} ${location.pathname === link.path ? styles.activeLink : ''}`}
-                                onClick={closeMenu}
-                                aria-current={location.pathname === link.path ? 'page' : undefined}
-                            >
-                                {link.name}
-                            </Link>
-                        </li>
-                    ))}
-                    <li className={styles.navItem} role="listitem">
-                        <Link to="/login" className={styles.loginBtn} onClick={closeMenu}>Sign In</Link>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    );
+                  {label}
+                </Link>
+              </li>
+            );
+          })}
+          <li>
+            <Link to="/login" className={styles.signInBtn} onClick={close}>
+              Sign In
+            </Link>
+          </li>
+        </ul>
+
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;

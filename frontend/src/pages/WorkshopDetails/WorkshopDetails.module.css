@@ -1,49 +1,147 @@
-.detailsContainer { display: flex; flex-direction: column; gap: var(--spacing-6); }
-.backLink { display: inline-block; font-weight: 500; color: var(--color-text-light); margin-bottom: var(--spacing-2); }
-.backLink:hover { color: var(--color-primary); }
-.contentGrid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-8); }
-@media (min-width: 992px) { .contentGrid { grid-template-columns: 3fr 2fr; align-items: start; } }
-.header { margin-bottom: var(--spacing-6); }
+/* ── Back link ──────────────────────────────────────────────────────────── */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: color var(--ease-fast), background var(--ease-fast);
+}
+.backLink:hover { color: var(--color-primary); background: var(--color-primary-light); }
+
+/* ── Two-column layout ──────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 3fr 2fr;
+    align-items: start;
+  }
+}
+
+/* ── Title block ────────────────────────────────────────────────────────── */
+.titleBlock { margin-bottom: var(--space-5); }
+
 .levelBadge {
-    display: inline-block;
-    font-size: var(--font-size-sm);
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    background-color: var(--color-primary);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--border-radius-sm);
-    margin-bottom: var(--spacing-3);
+  display: inline-block;
+  padding: .25rem .75rem;
+  background-color: var(--badge-bg, var(--badge-intermediate));
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-3);
 }
-.title { font-size: var(--font-size-3xl); color: var(--color-text); letter-spacing: -0.5px; }
-.metaDataList {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-6);
-    margin-bottom: var(--spacing-6);
+
+.title {
+  font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+  line-height: 1.15;
+  color: var(--color-text);
 }
-@media (min-width: 576px) { .metaDataList { grid-template-columns: 1fr 1fr; } }
-.metaItem { display: flex; align-items: flex-start; gap: var(--spacing-3); }
-.icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-.metaItem strong { display: block; font-size: var(--font-size-sm); color: var(--color-text-light); margin-bottom: 2px; }
-.metaItem dd { color: var(--color-text); font-weight: 500; font-size: var(--font-size-base); }
-.urgentText { color: #d97706 !important; font-weight: 700 !important; }
-.description { color: var(--color-text); }
-.description h2 { font-size: var(--font-size-xl); margin-bottom: var(--spacing-3); }
-.description p { font-size: var(--font-size-lg); line-height: 1.7; color: var(--color-text-light); }
-.formSection { position: sticky; top: calc(var(--navbar-height, 64px) + var(--spacing-4)); }
-.notFoundContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-12) 0;
-    text-align: center;
-    min-height: 50vh;
-    gap: var(--spacing-4);
+
+/* ── Spots warning banner ───────────────────────────────────────────────── */
+.spotsWarning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-warning-bg);
+  border: 1px solid rgba(217,119,6,.3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-warning);
+  margin-bottom: var(--space-6);
 }
+.soldOutBanner {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+/* ── Meta grid ──────────────────────────────────────────────────────────── */
+.metaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+@media (max-width: 480px) { .metaGrid { grid-template-columns: 1fr; } }
+
+.metaCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.metaIcon { font-size: 1.35rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+
+.metaLabel {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--color-text-light);
+  margin-bottom: var(--space-1);
+}
+
+.metaValue {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ── Description ────────────────────────────────────────────────────────── */
+.description h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-3);
+  color: var(--color-text);
+}
+.description p {
+  font-size: var(--text-base);
+  line-height: 1.8;
+  color: var(--color-text-muted);
+}
+
+/* ── Sticky form column ─────────────────────────────────────────────────── */
+.formCol {
+  position: sticky;
+  top: calc(var(--navbar-height) + var(--space-6));
+}
+
+/* ── Loading / not-found center ─────────────────────────────────────────── */
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.spinner {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

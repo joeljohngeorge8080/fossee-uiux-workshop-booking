@@ -3,54 +3,76 @@ import { Link } from 'react-router-dom';
 import styles from './WorkshopCard.module.css';
 
 const LEVEL_COLORS = {
-    Beginner:     'var(--badge-beginner)',
-    Intermediate: 'var(--badge-intermediate)',
-    Advanced:     'var(--badge-advanced)',
+  Beginner:     'var(--badge-beginner)',
+  Intermediate: 'var(--badge-intermediate)',
+  Advanced:     'var(--badge-advanced)',
 };
 
-const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+const fmtDate = (d) =>
+  new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
 const WorkshopCard = memo(({ id, title, date, instructor, excerpt, level, spotsLeft }) => {
-    const badgeColor   = LEVEL_COLORS[level] ?? 'var(--badge-intermediate)';
-    const isAlmostFull = spotsLeft !== undefined && spotsLeft <= 5;
+  const badgeColor   = LEVEL_COLORS[level] ?? 'var(--badge-intermediate)';
+  const almostFull   = spotsLeft !== undefined && spotsLeft > 0 && spotsLeft <= 5;
+  const soldOut      = spotsLeft === 0;
 
-    return (
-        <article className={styles.card}>
-            <div className={styles.cardHeader}>
-                <div className={styles.cardHeaderTop}>
-                    <span className={styles.levelBadge} style={{ '--badge-color': badgeColor }}>{level}</span>
-                    {isAlmostFull && spotsLeft > 0 && (
-                        <span className={styles.urgency} aria-label={`Only ${spotsLeft} spot${spotsLeft === 1 ? '' : 's'} remaining`}>
-                            {spotsLeft} left
-                        </span>
-                    )}
-                    {spotsLeft === 0 && (
-                        <span className={styles.urgency} aria-label="Fully booked">Full</span>
-                    )}
-                </div>
-                <h3 className={styles.title}>{title}</h3>
-            </div>
-            <div className={styles.cardBody}>
-                <dl className={styles.metaData}>
-                    <div className={styles.metaRow}>
-                        <dt className={styles.srOnly}>Date</dt>
-                        <dd className={styles.date}><span aria-hidden="true">📅</span> {formatDate(date)}</dd>
-                    </div>
-                    <div className={styles.metaRow}>
-                        <dt className={styles.srOnly}>Instructor</dt>
-                        <dd className={styles.instructor}><span aria-hidden="true">👨‍🏫</span> {instructor}</dd>
-                    </div>
-                </dl>
-                <p className={styles.excerpt}>{excerpt}</p>
-            </div>
-            <div className={styles.cardFooter}>
-                <Link to={`/workshop/${id}`} className={styles.registerBtn} aria-label={`View details and register for ${title}`}>
-                    View &amp; Register
-                </Link>
-            </div>
-        </article>
-    );
+  return (
+    <article className={styles.card}>
+      {/* ── Header ── */}
+      <div className={styles.cardHeader}>
+        <div className={styles.topRow}>
+          <span
+            className={styles.badge}
+            style={{ '--badge-bg': badgeColor }}
+          >
+            {level}
+          </span>
+
+          {almostFull && (
+            <span className={styles.urgency} aria-label={`Only ${spotsLeft} spots left`}>
+              🔥 {spotsLeft} left
+            </span>
+          )}
+          {soldOut && (
+            <span className={`${styles.urgency} ${styles.soldOut}`} aria-label="Sold out">
+              Sold out
+            </span>
+          )}
+        </div>
+
+        <h3 className={styles.title}>{title}</h3>
+      </div>
+
+      {/* ── Body ── */}
+      <div className={styles.cardBody}>
+        <dl className={styles.meta}>
+          <div className={styles.metaRow}>
+            <dt className="sr-only">Date</dt>
+            <dd><span aria-hidden="true">📅</span> {fmtDate(date)}</dd>
+          </div>
+          <div className={styles.metaRow}>
+            <dt className="sr-only">Instructor</dt>
+            <dd><span aria-hidden="true">👤</span> {instructor}</dd>
+          </div>
+        </dl>
+
+        <p className={styles.excerpt}>{excerpt}</p>
+      </div>
+
+      {/* ── Footer ── */}
+      <div className={styles.cardFooter}>
+        <Link
+          to={`/workshop/${id}`}
+          className={`${styles.btn} ${soldOut ? styles.btnDisabled : ''}`}
+          aria-label={`View details for ${title}`}
+          aria-disabled={soldOut}
+          tabIndex={soldOut ? -1 : undefined}
+        >
+          {soldOut ? 'Fully Booked' : 'View & Register →'}
+        </Link>
+      </div>
+    </article>
+  );
 });
 
 WorkshopCard.displayName = 'WorkshopCard';
