@@ -121,7 +121,7 @@ const WorkshopDetails = () => {
 
                 {/* Right Column: Registration Form */}
                 <aside className={styles.formSection}>
-                    <RegistrationForm workshopId={workshop.id} />
+                    <RegistrationForm workshopId={workshop.id} workshopTitle={workshop.title} />
                 </aside>
 
             </div>
