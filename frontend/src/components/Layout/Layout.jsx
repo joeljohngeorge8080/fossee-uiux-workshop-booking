@@ -2,22 +2,21 @@ import React from 'react';
 import Navbar from '../Navbar/Navbar';
 import styles from './Layout.module.css';
 
-const Layout = ({ children }) => {
-    return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <Navbar />
-            </header>
-            <main className={styles.main}>
-                {children}
-            </main>
-            <footer className={styles.footer}>
-                <div className={styles.footerContent}>
-                    <p>&copy; {new Date().getFullYear()} Workshop Booking Platform.</p>
-                </div>
-            </footer>
-        </div>
-    );
-};
+const Layout = ({ children }) => (
+    <div className={styles.container}>
+        <a href="#main-content" className="skip-to-main">Skip to main content</a>
+        <header className={styles.header}>
+            <Navbar />
+        </header>
+        <main id="main-content" className={styles.main} tabIndex={-1}>
+            {children}
+        </main>
+        <footer className={styles.footer} role="contentinfo">
+            <div className={styles.footerContent}>
+                <p>&copy; {new Date().getFullYear()} LearnForge. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+);
 
 export default Layout;

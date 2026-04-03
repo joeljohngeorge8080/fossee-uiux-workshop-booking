@@ -1,159 +1,116 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState } from 'react';
 import useFormValidation from '../../hooks/useFormValidation';
+import { useWorkshops } from '../../context/WorkshopContext';
+import { useToast } from '../Toast/ToastContext';
 import styles from './RegistrationForm.module.css';
 
-const INITIAL_STATE = {
-    name: '',
-    email: '',
-    phone: '',
-    experienceLevel: '',
-    comments: '',
-};
-
-// Kept outside component — pure function, no need to recreate on each render
 const validateRegistration = (values) => {
     const errors = {};
-    if (!values.name.trim()) errors.name = 'Your full name is required.';
-    if (!values.email) {
-        errors.email = 'Email address is required.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-        errors.email = 'Please enter a valid email address.';
-    }
-    if (!values.experienceLevel) errors.experienceLevel = 'Please select your experience level.';
+    if (!values.name.trim())              errors.name = 'Full name is required.';
+    else if (values.name.trim().length < 2) errors.name = 'Name must be at least 2 characters.';
+    if (!values.email)                    errors.email = 'Email address is required.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = 'Please enter a valid email address.';
+    if (values.phone && !/^[+\d\s\-().]{7,20}$/.test(values.phone)) errors.phone = 'Please enter a valid phone number.';
+    if (!values.experienceLevel)          errors.experienceLevel = 'Please select your experience level.';
     return errors;
 };
 
-const RegistrationForm = ({ workshopId, workshopTitle }) => {
-    const [isSuccess, setIsSuccess] = useState(false);
+const INITIAL_STATE = { name: '', email: '', phone: '', experienceLevel: '', comments: '' };
 
-    // Memoize so useFormValidation's deps stay stable across renders
-    const validate = useMemo(() => validateRegistration, []);
+const RegistrationForm = ({ workshopId }) => {
+    const { submitRegistration } = useWorkshops();
+    const { addToast } = useToast();
+    const [successData, setSuccessData] = useState(null);
+    const [serverError, setServerError] = useState(null);
 
-    const submitAction = useCallback(async (values) => {
-        // Replace with: await fetch(`/api/workshops/${workshopId}/register/`, {...})
-        return new Promise(resolve => {
-            setTimeout(() => {
-                setIsSuccess(true);
-                resetForm();
-                resolve();
-            }, 1000);
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [workshopId]);
+    const submitAction = async (values) => {
+        setServerError(null);
+        try {
+            const result = await submitRegistration(workshopId, values);
+            setSuccessData(result);
+            resetForm();
+            addToast('Registration successful! Check your inbox for confirmation.', 'success');
+        } catch (err) {
+            const msg = err.message ?? 'Registration failed. Please try again.';
+            setServerError(msg);
+            addToast(msg, 'error');
+            throw err;
+        }
+    };
 
-    const {
-        values, errors, touched, isSubmitting,
-        handleChange, handleBlur, handleSubmit, resetForm,
-    } = useFormValidation(INITIAL_STATE, validate);
+    const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit, resetForm } =
+        useFormValidation(INITIAL_STATE, validateRegistration);
 
-    if (isSuccess) {
+    if (successData) {
         return (
-            <div className={styles.successPanel} role="alert" aria-live="polite">
-                <span className={styles.successIcon} aria-hidden="true">✓</span>
-                <h3>You're registered!</h3>
-                <p>Check your inbox — a confirmation email is on its way.</p>
-                <button
-                    type="button"
-                    className={styles.secondaryBtn}
-                    onClick={() => setIsSuccess(false)}
-                >
-                    Register someone else
+            <div className={styles.successMessage} role="alert" aria-live="polite">
+                <div className={styles.successIcon} aria-hidden="true">✅</div>
+                <h3>You&apos;re registered!</h3>
+                <p>A confirmation email is on its way to your inbox.</p>
+                {successData.confirmationId && (
+                    <p className={styles.confirmationId}>
+                        Confirmation ID: <strong>{successData.confirmationId}</strong>
+                    </p>
+                )}
+                <button type="button" className={styles.submitBtn} onClick={() => setSuccessData(null)}>
+                    Register Another Person
                 </button>
             </div>
         );
     }
 
+    const field = (name, label, type = 'text', required = true) => (
+        <div className={styles.formGroup}>
+            <label htmlFor={name} className={styles.label}>
+                {label}{' '}
+                {required
+                    ? <span className={styles.required} aria-hidden="true">*</span>
+                    : <span className={styles.optional}>(optional)</span>}
+            </label>
+            <input
+                id={name} name={name} type={type}
+                value={values[name]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className={`${styles.input} ${touched[name] && errors[name] ? styles.inputError : ''}`}
+                aria-required={required}
+                aria-invalid={!!(touched[name] && errors[name])}
+                aria-describedby={touched[name] && errors[name] ? `${name}-error` : undefined}
+                autoComplete={name === 'phone' ? 'tel' : name}
+                disabled={isSubmitting}
+            />
+            {touched[name] && errors[name] && (
+                <span id={`${name}-error`} className={styles.errorMessage} role="alert">{errors[name]}</span>
+            )}
+        </div>
+    );
+
     return (
-        <form
-            className={styles.form}
-            onSubmit={(e) => handleSubmit(e, submitAction)}
-            noValidate
-            aria-label={workshopTitle ? `Register for ${workshopTitle}` : 'Workshop registration'}
-        >
+        <form className={styles.formContainer} onSubmit={(e) => handleSubmit(e, submitAction)} noValidate>
             <h3 className={styles.formTitle}>Secure Your Spot</h3>
-            <p className={styles.formHint}>
-                Fields marked <span aria-hidden="true" className={styles.req}>*</span>
-                <span className={styles.srOnly}> with an asterisk</span> are required.
-            </p>
 
-            {/* Full Name */}
-            <div className={styles.fieldGroup}>
-                <label htmlFor="reg-name" className={styles.label}>
-                    Full Name <span className={styles.req} aria-hidden="true">*</span>
-                </label>
-                <input
-                    id="reg-name"
-                    name="name"
-                    type="text"
-                    value={values.name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={`${styles.input} ${touched.name && errors.name ? styles.inputInvalid : ''}`}
-                    aria-invalid={!!(touched.name && errors.name)}
-                    aria-describedby={touched.name && errors.name ? 'name-err' : undefined}
-                    autoComplete="name"
-                    placeholder="e.g. Priya Sharma"
-                />
-                {touched.name && errors.name && (
-                    <span id="name-err" className={styles.fieldError} role="alert">{errors.name}</span>
-                )}
-            </div>
+            {serverError && (
+                <div className={styles.serverError} role="alert" aria-live="assertive">{serverError}</div>
+            )}
 
-            {/* Email */}
-            <div className={styles.fieldGroup}>
-                <label htmlFor="reg-email" className={styles.label}>
-                    Email Address <span className={styles.req} aria-hidden="true">*</span>
-                </label>
-                <input
-                    id="reg-email"
-                    name="email"
-                    type="email"
-                    value={values.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={`${styles.input} ${touched.email && errors.email ? styles.inputInvalid : ''}`}
-                    aria-invalid={!!(touched.email && errors.email)}
-                    aria-describedby={touched.email && errors.email ? 'email-err' : undefined}
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                />
-                {touched.email && errors.email && (
-                    <span id="email-err" className={styles.fieldError} role="alert">{errors.email}</span>
-                )}
-            </div>
+            {field('name',  'Full Name')}
+            {field('email', 'Email Address', 'email')}
+            {field('phone', 'Phone Number',  'tel', false)}
 
-            {/* Phone — optional, no validation */}
-            <div className={styles.fieldGroup}>
-                <label htmlFor="reg-phone" className={styles.label}>
-                    Phone <span className={styles.optional}>(optional)</span>
-                </label>
-                <input
-                    id="reg-phone"
-                    name="phone"
-                    type="tel"
-                    value={values.phone}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={styles.input}
-                    autoComplete="tel"
-                    placeholder="+91 98765 43210"
-                />
-            </div>
-
-            {/* Experience Level */}
-            <div className={styles.fieldGroup}>
-                <label htmlFor="reg-level" className={styles.label}>
-                    Experience Level <span className={styles.req} aria-hidden="true">*</span>
+            <div className={styles.formGroup}>
+                <label htmlFor="experienceLevel" className={styles.label}>
+                    Experience Level <span className={styles.required} aria-hidden="true">*</span>
                 </label>
                 <select
-                    id="reg-level"
-                    name="experienceLevel"
+                    id="experienceLevel" name="experienceLevel"
                     value={values.experienceLevel}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`${styles.select} ${touched.experienceLevel && errors.experienceLevel ? styles.inputInvalid : ''}`}
+                    className={`${styles.select} ${touched.experienceLevel && errors.experienceLevel ? styles.inputError : ''}`}
+                    aria-required="true"
                     aria-invalid={!!(touched.experienceLevel && errors.experienceLevel)}
-                    aria-describedby={touched.experienceLevel && errors.experienceLevel ? 'level-err' : undefined}
+                    aria-describedby={touched.experienceLevel && errors.experienceLevel ? 'experienceLevel-error' : undefined}
+                    disabled={isSubmitting}
                 >
                     <option value="" disabled>Select your level</option>
                     <option value="beginner">Beginner</option>
@@ -161,38 +118,27 @@ const RegistrationForm = ({ workshopId, workshopTitle }) => {
                     <option value="advanced">Advanced</option>
                 </select>
                 {touched.experienceLevel && errors.experienceLevel && (
-                    <span id="level-err" className={styles.fieldError} role="alert">{errors.experienceLevel}</span>
+                    <span id="experienceLevel-error" className={styles.errorMessage} role="alert">
+                        {errors.experienceLevel}
+                    </span>
                 )}
             </div>
 
-            {/* Comments */}
-            <div className={styles.fieldGroup}>
-                <label htmlFor="reg-comments" className={styles.label}>
-                    Questions or Comments <span className={styles.optional}>(optional)</span>
+            <div className={styles.formGroup}>
+                <label htmlFor="comments" className={styles.label}>
+                    Questions / Comments <span className={styles.optional}>(optional)</span>
                 </label>
                 <textarea
-                    id="reg-comments"
-                    name="comments"
-                    rows={4}
+                    id="comments" name="comments" rows={4}
                     value={values.comments}
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     className={styles.textarea}
-                    placeholder="Anything you'd like us to know beforehand..."
+                    disabled={isSubmitting}
                 />
             </div>
 
-            <button
-                type="submit"
-                className={styles.submitBtn}
-                disabled={isSubmitting}
-                aria-busy={isSubmitting}
-            >
-                {isSubmitting ? (
-                    <><span className={styles.spinner} aria-hidden="true" /> Processing…</>
-                ) : (
-                    'Complete Registration'
-                )}
+            <button type="submit" className={styles.submitBtn} disabled={isSubmitting} aria-busy={isSubmitting}>
+                {isSubmitting ? 'Processing…' : 'Complete Registration'}
             </button>
         </form>
     );
