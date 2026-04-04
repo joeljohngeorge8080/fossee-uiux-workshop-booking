@@ -1,4 +1,3 @@
-/* ── Card shell ─────────────────────────────────────────────────────────── */
 .card {
   display: flex;
   flex-direction: column;
@@ -10,33 +9,16 @@
   height: 100%;
   transition: transform var(--ease-base), box-shadow var(--ease-base), border-color var(--ease-base);
 }
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-primary);
-}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--color-primary); }
 
-/* ── Header ─────────────────────────────────────────────────────────────── */
-.cardHeader {
-  padding: var(--space-5) var(--space-5) var(--space-4);
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-}
+.cardHeader { padding: var(--space-5); background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
 
-.topRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
-  flex-wrap: wrap;
-}
+.topRow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); flex-wrap: wrap; }
 
-/* Level badge — colour set via inline CSS var */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.6rem;
+  padding: .2rem .6rem;
   background-color: var(--badge-bg, var(--badge-intermediate));
   color: #fff;
   font-size: var(--text-xs);
@@ -44,10 +26,8 @@
   letter-spacing: .5px;
   text-transform: uppercase;
   border-radius: var(--radius-full);
-  flex-shrink: 0;
 }
 
-/* Urgency chip */
 .urgency {
   display: inline-flex;
   align-items: center;
@@ -61,30 +41,14 @@
   border: 1px solid rgba(217,119,6,.25);
   white-space: nowrap;
 }
-.soldOut {
-  color: var(--color-text-muted);
-  background: var(--color-surface-alt);
-  border-color: var(--color-border);
-}
+.soldOut { color: var(--color-text-muted); background: var(--color-surface-alt); border-color: var(--color-border); }
 
-.title {
-  font-size: var(--text-lg);
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1.3;
-}
+.title { font-size: var(--text-lg); font-weight: 700; color: var(--color-text); line-height: 1.3; }
 
-/* ── Body ───────────────────────────────────────────────────────────────── */
 .cardBody { padding: var(--space-5); flex: 1; display: flex; flex-direction: column; gap: var(--space-4); }
 
 .meta { display: flex; flex-direction: column; gap: var(--space-1); }
-.metaRow {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
+.metaRow { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
 .metaRow dd { display: flex; align-items: center; gap: var(--space-2); }
 
 .excerpt {
@@ -92,19 +56,13 @@
   color: var(--color-text-muted);
   line-height: 1.7;
   flex: 1;
-  /* Clamp to 3 lines — avoids cards of wildly different heights */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* ── Footer ─────────────────────────────────────────────────────────────── */
-.cardFooter {
-  padding: var(--space-4) var(--space-5);
-  border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
-}
+.cardFooter { padding: var(--space-4) var(--space-5); border-top: 1px solid var(--color-border); background: var(--color-surface); }
 
 .btn {
   display: block;
@@ -118,10 +76,4 @@
   transition: background var(--ease-fast), transform var(--ease-fast);
 }
 .btn:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
-
-.btnDisabled {
-  background: var(--color-surface-alt);
-  color: var(--color-text-muted) !important;
-  cursor: not-allowed;
-  pointer-events: none;
-}
+.btnDisabled { background: var(--color-surface-alt); color: var(--color-text-muted) !important; cursor: not-allowed; pointer-events: none; }

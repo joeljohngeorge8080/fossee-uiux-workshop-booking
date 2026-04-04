@@ -5,15 +5,12 @@ import styles from './Layout.module.css';
 const Layout = ({ children }) => (
   <div className={styles.wrapper}>
     <a href="#main-content" className="skip-to-main">Skip to main content</a>
-
     <header className={styles.header}>
       <Navbar />
     </header>
-
     <main id="main-content" className={styles.main} tabIndex={-1}>
       {children}
     </main>
-
     <footer className={styles.footer} role="contentinfo">
       <div className={styles.footerInner}>
         <p>© {new Date().getFullYear()} LearnForge — All rights reserved.</p>

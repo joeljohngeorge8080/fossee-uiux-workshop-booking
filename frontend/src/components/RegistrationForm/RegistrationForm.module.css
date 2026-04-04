@@ -1,31 +1,11 @@
-/* ── Card shell ─────────────────────────────────────────────────────────── */
-.card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-
-.cardHeader {
-  padding: var(--space-5) var(--space-6);
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.formTitle {
-  font-size: var(--text-xl);
-  color: var(--color-text);
-}
-
-.fields {
-  padding: var(--space-6);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
-
-/* ── Inputs ─────────────────────────────────────────────────────────────── */
+.card { background: var(--color-background); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; }
+.cardHead { padding: var(--space-5) var(--space-6); background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+.formTitle { font-size: var(--text-xl); color: var(--color-text); }
+.fields { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-5); }
+.field { display: flex; flex-direction: column; gap: .35rem; }
+.label { font-size: var(--text-sm); font-weight: 600; color: var(--color-text); }
+.req  { color: var(--color-error); margin-left: 2px; }
+.hint { color: var(--color-text-light); font-weight: 400; font-size: var(--text-xs); }
 .input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
@@ -38,36 +18,13 @@
   transition: border-color var(--ease-fast), box-shadow var(--ease-fast);
 }
 .input:hover:not(:disabled) { border-color: var(--color-text-light); }
-.input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,.15);
-}
+.input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
 .input:disabled { opacity: .55; cursor: not-allowed; background: var(--color-surface-alt); }
-
 .select { cursor: pointer; }
 .textarea { resize: vertical; min-height: 80px; }
-
-/* ── Error state ────────────────────────────────────────────────────────── */
-.inputErr {
-  border-color: var(--color-error) !important;
-  background: var(--color-error-bg);
-}
+.inputErr { border-color: var(--color-error) !important; background: var(--color-error-bg); }
 .inputErr:focus { box-shadow: 0 0 0 3px rgba(220,38,38,.15) !important; }
 .errMsg { font-size: var(--text-xs); color: var(--color-error); font-weight: 500; }
-
-/* Server error banner */
-.serverError {
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-error-bg);
-  border: 1px solid rgba(220,38,38,.3);
-  border-radius: var(--radius-md);
-  color: var(--color-error);
-  font-size: var(--text-sm);
-  font-weight: 500;
-}
-
-/* ── Submit button ──────────────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -85,44 +42,25 @@
 }
 .btn:hover:not(:disabled) { background: var(--color-primary-hover); transform: translateY(-1px); }
 .btn:disabled { opacity: .65; cursor: not-allowed; transform: none; }
-
 .submitBtn { width: 100%; }
-
-/* ── Button spinner ─────────────────────────────────────────────────────── */
 .btnSpinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
+  width: 14px; height: 14px;
   border: 2px solid rgba(255,255,255,.35);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin .7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Success state ──────────────────────────────────────────────────────── */
 .success {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--space-3);
-  padding: var(--space-10) var(--space-6);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: var(--space-3); padding: var(--space-10) var(--space-6);
   background: var(--color-background);
-  border: 1px solid var(--color-success);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-success); border-radius: var(--radius-xl); box-shadow: var(--shadow-md);
 }
-.successIcon { font-size: 2.5rem; line-height: 1; }
+.successIcon { font-size: 2.5rem; }
 .success h3  { font-size: var(--text-xl); color: var(--color-success); }
 .success p   { font-size: var(--text-sm); color: var(--color-text-muted); }
 .confirmId   { font-size: var(--text-xs); color: var(--color-text-light); }
 .confirmId code { color: var(--color-text); font-size: var(--text-sm); }
-
-/* ── Sold-out state ─────────────────────────────────────────────────────── */
-.soldOutMsg {
-  padding: var(--space-6);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  line-height: 1.7;
-}
+.soldMsg { padding: var(--space-6); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.7; }

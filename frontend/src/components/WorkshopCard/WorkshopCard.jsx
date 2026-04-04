@@ -12,38 +12,25 @@ const fmtDate = (d) =>
   new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
 const WorkshopCard = memo(({ id, title, date, instructor, excerpt, level, spotsLeft }) => {
-  const badgeColor   = LEVEL_COLORS[level] ?? 'var(--badge-intermediate)';
-  const almostFull   = spotsLeft !== undefined && spotsLeft > 0 && spotsLeft <= 5;
-  const soldOut      = spotsLeft === 0;
+  const badgeColor = LEVEL_COLORS[level] ?? 'var(--badge-intermediate)';
+  const almostFull = spotsLeft !== undefined && spotsLeft > 0 && spotsLeft <= 5;
+  const soldOut    = spotsLeft === 0;
 
   return (
     <article className={styles.card}>
-      {/* ── Header ── */}
       <div className={styles.cardHeader}>
         <div className={styles.topRow}>
-          <span
-            className={styles.badge}
-            style={{ '--badge-bg': badgeColor }}
-          >
-            {level}
-          </span>
-
+          <span className={styles.badge} style={{ '--badge-bg': badgeColor }}>{level}</span>
           {almostFull && (
             <span className={styles.urgency} aria-label={`Only ${spotsLeft} spots left`}>
               🔥 {spotsLeft} left
             </span>
           )}
-          {soldOut && (
-            <span className={`${styles.urgency} ${styles.soldOut}`} aria-label="Sold out">
-              Sold out
-            </span>
-          )}
+          {soldOut && <span className={`${styles.urgency} ${styles.soldOut}`}>Sold out</span>}
         </div>
-
         <h3 className={styles.title}>{title}</h3>
       </div>
 
-      {/* ── Body ── */}
       <div className={styles.cardBody}>
         <dl className={styles.meta}>
           <div className={styles.metaRow}>
@@ -55,18 +42,15 @@ const WorkshopCard = memo(({ id, title, date, instructor, excerpt, level, spotsL
             <dd><span aria-hidden="true">👤</span> {instructor}</dd>
           </div>
         </dl>
-
         <p className={styles.excerpt}>{excerpt}</p>
       </div>
 
-      {/* ── Footer ── */}
       <div className={styles.cardFooter}>
         <Link
           to={`/workshop/${id}`}
           className={`${styles.btn} ${soldOut ? styles.btnDisabled : ''}`}
           aria-label={`View details for ${title}`}
           aria-disabled={soldOut}
-          tabIndex={soldOut ? -1 : undefined}
         >
           {soldOut ? 'Fully Booked' : 'View & Register →'}
         </Link>

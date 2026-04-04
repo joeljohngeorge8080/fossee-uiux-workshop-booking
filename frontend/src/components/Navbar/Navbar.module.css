@@ -1,5 +1,5 @@
-/* ── Shell ──────────────────────────────────────────────────────────────── */
-.nav  { width: 100%; height: 100%; display: flex; align-items: center; }
+.nav  { width: 100%; height: 100%; display: flex; align-items: center; background: var(--color-background); }
+
 .inner {
   display: flex;
   align-items: center;
@@ -12,7 +12,7 @@
   position: relative;
 }
 
-/* ── Logo ───────────────────────────────────────────────────────────────── */
+/* Logo */
 .logo {
   font-family: var(--font-display);
   font-size: var(--text-xl);
@@ -22,19 +22,19 @@
 }
 .accent { color: var(--color-primary); }
 
-/* ── Hamburger ──────────────────────────────────────────────────────────── */
+/* Hamburger */
 .hamburger {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  width: 32px;
-  height: 32px;
-  padding: 2px;
+  width: 36px;
+  height: 36px;
+  padding: 4px;
   background: none;
   border: none;
-  cursor: pointer;
   border-radius: var(--radius-sm);
+  cursor: pointer;
   transition: background var(--ease-fast);
 }
 .hamburger:hover { background: var(--color-surface-alt); }
@@ -43,7 +43,7 @@
   display: block;
   width: 100%;
   height: 2px;
-  background-color: var(--color-text);
+  background: var(--color-text);
   border-radius: 2px;
   transition: transform var(--ease-base), opacity var(--ease-base);
   transform-origin: center;
@@ -52,7 +52,7 @@
 .hamburgerOpen .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .hamburgerOpen .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ── Mobile nav menu ────────────────────────────────────────────────────── */
+/* Mobile nav */
 .links {
   display: flex;
   flex-direction: column;
@@ -60,28 +60,18 @@
   top: 100%;
   left: 0;
   right: 0;
-  background-color: var(--color-background);
+  background: var(--color-background);
   border-top: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
-  padding: var(--space-4);
-  gap: var(--space-2);
-  /* Hidden by default — uses visibility+opacity instead of display:none
-     so transitions work and screen readers can still access it */
+  padding: var(--space-3);
+  gap: var(--space-1);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-6px);
-  transition:
-    opacity    var(--ease-base),
-    transform  var(--ease-base),
-    visibility var(--ease-base);
+  transform: translateY(-8px);
+  transition: opacity var(--ease-base), transform var(--ease-base), visibility var(--ease-base);
 }
-.linksOpen {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
+.linksOpen { opacity: 1; visibility: visible; transform: translateY(0); }
 
-/* ── Link items ─────────────────────────────────────────────────────────── */
 .link {
   display: block;
   padding: var(--space-3) var(--space-4);
@@ -92,28 +82,24 @@
   transition: background var(--ease-fast), color var(--ease-fast);
   text-align: center;
 }
-.link:hover { background: var(--color-surface-alt); color: var(--color-text); }
+.link:hover  { background: var(--color-surface-alt); color: var(--color-text); }
 .linkActive  { background: var(--color-primary-light); color: var(--color-primary); font-weight: 600; }
 
 .signInBtn {
   display: block;
   text-align: center;
   padding: var(--space-3) var(--space-6);
-  background-color: var(--color-primary);
+  background: var(--color-primary);
   color: #fff !important;
   border-radius: var(--radius-md);
   font-weight: 600;
   transition: background var(--ease-fast), transform var(--ease-fast);
 }
-.signInBtn:hover {
-  background-color: var(--color-primary-hover);
-  transform: translateY(-1px);
-}
+.signInBtn:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
 
-/* ── Desktop (≥768px) ──────────────────────────────────────────────────── */
+/* Desktop ≥ 768px */
 @media (min-width: 768px) {
   .hamburger { display: none; }
-
   .links {
     position: static;
     flex-direction: row;
@@ -122,17 +108,12 @@
     border: none;
     box-shadow: none;
     padding: 0;
-    gap: var(--space-2);
+    gap: var(--space-1);
     opacity: 1;
     visibility: visible;
     transform: none;
     height: 100%;
   }
-
-  .link {
-    padding: var(--space-2) var(--space-3);
-    text-align: left;
-  }
-
+  .link { padding: var(--space-2) var(--space-3); text-align: left; }
   .signInBtn { padding: var(--space-2) var(--space-5); }
 }

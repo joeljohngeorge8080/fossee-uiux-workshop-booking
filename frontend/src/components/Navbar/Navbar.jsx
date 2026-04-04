@@ -4,17 +4,16 @@ import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
   { label: 'Workshops',   path: '/' },
-  { label: 'My Bookings', path: '/bookings' },
+  { label: 'My Bookings', path: '/my-bookings' },
   { label: 'About',       path: '/about' },
 ];
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false);
-  const location  = useLocation();
-  const navRef    = useRef(null);
-  const btnRef    = useRef(null);
-
-  const close = useCallback(() => setOpen(false), []);
+  const [open, setOpen]   = useState(false);
+  const location          = useLocation();
+  const navRef            = useRef(null);
+  const btnRef            = useRef(null);
+  const close             = useCallback(() => setOpen(false), []);
 
   /* Close on route change */
   useEffect(() => { close(); }, [location.pathname, close]);
@@ -22,17 +21,21 @@ const Navbar = () => {
   /* Close on Escape — return focus to hamburger */
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => { if (e.key === 'Escape') { close(); btnRef.current?.focus(); } };
+    const onKey = (e) => {
+      if (e.key === 'Escape') { close(); btnRef.current?.focus(); }
+    };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [open, close]);
 
-  /* Close on click outside */
+  /* Close on outside click */
   useEffect(() => {
     if (!open) return;
-    const onOutside = (e) => { if (navRef.current && !navRef.current.contains(e.target)) close(); };
-    document.addEventListener('mousedown', onOutside);
-    return () => document.removeEventListener('mousedown', onOutside);
+    const onOut = (e) => {
+      if (navRef.current && !navRef.current.contains(e.target)) close();
+    };
+    document.addEventListener('mousedown', onOut);
+    return () => document.removeEventListener('mousedown', onOut);
   }, [open, close]);
 
   return (
@@ -43,7 +46,7 @@ const Navbar = () => {
           Learn<span className={styles.accent}>Forge</span>
         </Link>
 
-        {/* Hamburger button — visible only on mobile */}
+        {/* Hamburger — mobile only */}
         <button
           ref={btnRef}
           className={`${styles.hamburger} ${open ? styles.hamburgerOpen : ''}`}
@@ -57,12 +60,8 @@ const Navbar = () => {
           <span className={styles.bar} />
         </button>
 
-        {/* Nav links */}
-        <ul
-          id="nav-links"
-          className={`${styles.links} ${open ? styles.linksOpen : ''}`}
-          role="list"
-        >
+        {/* Links */}
+        <ul id="nav-links" className={`${styles.links} ${open ? styles.linksOpen : ''}`} role="list">
           {NAV_LINKS.map(({ label, path }) => {
             const active = location.pathname === path;
             return (
@@ -79,12 +78,11 @@ const Navbar = () => {
             );
           })}
           <li>
-            <Link to="/login" className={styles.signInBtn} onClick={close}>
+            <Link to="/sign-in" className={styles.signInBtn} onClick={close}>
               Sign In
             </Link>
           </li>
         </ul>
-
       </div>
     </nav>
   );
