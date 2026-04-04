@@ -27,8 +27,6 @@ jobs:
       # 1. Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       # 2. Docker metadata — generates image tags automatically
       #    main branch → :latest
