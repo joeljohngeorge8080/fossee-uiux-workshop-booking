@@ -51,6 +51,7 @@ export function WorkshopProvider({ children }) {
     return <WorkshopContext.Provider value={value}>{children}</WorkshopContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWorkshops() {
     const ctx = useContext(WorkshopContext);
     if (!ctx) throw new Error('useWorkshops must be used inside <WorkshopProvider>');

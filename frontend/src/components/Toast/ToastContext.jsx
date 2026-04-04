@@ -5,9 +5,9 @@ const ToastContext = createContext(null);
 
 function toastReducer(state, action) {
     switch (action.type) {
-        case 'ADD':    return [...state, action.toast];
+        case 'ADD': return [...state, action.toast];
         case 'REMOVE': return state.filter((t) => t.id !== action.id);
-        default:       return state;
+        default: return state;
     }
 }
 
@@ -15,7 +15,7 @@ let _nextId = 0;
 
 export function ToastProvider({ children }) {
     const [toasts, dispatch] = useReducer(toastReducer, []);
-    const addToast    = useCallback((message, type = 'info', duration = 4000) => {
+    const addToast = useCallback((message, type = 'info', duration = 4000) => {
         dispatch({ type: 'ADD', toast: { id: ++_nextId, message, type, duration } });
     }, []);
     const removeToast = useCallback((id) => dispatch({ type: 'REMOVE', id }), []);
@@ -28,6 +28,7 @@ export function ToastProvider({ children }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useToast() {
     const ctx = useContext(ToastContext);
     if (!ctx) throw new Error('useToast must be used inside <ToastProvider>');
