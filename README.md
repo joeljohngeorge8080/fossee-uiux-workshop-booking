@@ -1,160 +1,210 @@
-# LearnForge — FOSSEE UI/UX Screening Task
+# LearnForge — FOSSEE UI/UX Workshop Booking Enhancement
 
-This is my submission for the FOSSEE UI/UX screening task. The base project had the routing and pages already set up, but it felt pretty bare to use — no way to find a specific workshop, no feedback on form errors until you submit, nothing. So I focused on making it actually usable.
-
----
-
-## What I Changed (Before vs After)
-
-| Area | Before | After |
-|---|---|---|
-| Workshop list | Static grid, no filtering | Search bar + level filter pills |
-| Empty states | Just a plain text message | Icon, message, and a reset button |
-| Form validation | Errors only on submit | Shows errors on blur, clears when fixed |
-| Loading | Nothing while fetching | Spinner with screen reader support |
-| Urgency cues | None | "🔥 3 left" chip and sold-out badge |
-| Navigation | Plain links | Active page highlighted in Navbar |
-| Card height | Inconsistent | Excerpt clamped to 3 lines |
-| Accessibility | Minimal | `aria-*` attributes + semantic HTML throughout |
+> **FOSSEE Python Screening Task** — UI/UX Enhancement of the FOSSEE Workshop Booking site,
+> rebuilt in React with a focus on mobile-first design, accessibility, and performance.
 
 ---
 
-## Design Principles
+## 📸 Before & After
 
-A few things I kept reminding myself:
+| Before | After |
+|--------|-------|
+| ![Before](screenshots/before.png) | ![After](screenshots/after.png) |
 
-- **Make things obvious** — If spots are running low, show it on the card. Don't hide it behind a tooltip or a separate page.
-- **Don't show everything at once** — The toolbar (search + filters) only shows up after workshops load. No point cluttering the screen while it's still loading.
-- **Validate at the right time** — Showing errors while someone is still typing is annoying. So errors show up when you leave a field, and go away the moment you fix it.
-- **Keep it simple** — I didn't add any animation libraries or global state. If a `useMemo` and a CSS transition can do the job, that's enough.
-
----
-
-## Responsiveness
-
-Used CSS Grid with breakpoints:
-
-- **Mobile (< 640px):** Cards in a single column, toolbar wraps to two rows
-- **Tablet (640–1023px):** Two-column grid, toolbar on one row
-- **Desktop (≥ 1024px):** Three-column grid
-
-The search input has a `max-width` so it doesn't look weird on big screens. Filter pills use `flex-wrap` so they wrap naturally. The workshop details page switches from a single column to a side-by-side info+form layout at 768px — all done in CSS, no JS.
+> Screenshots are in the `screenshots/` folder. A live demo can be run locally
+> with the instructions below, or via Docker.
 
 ---
 
-## Trade-offs
+## ✨ What Was Improved
 
-A couple of decisions I made and why:
-
-- **Consistent card height vs showing full content** — I used `-webkit-line-clamp` to cut card excerpts at 3 lines. Some content gets hidden, but the grid looks way better when all cards are the same height. Full description is on the details page anyway.
-- **Simple search vs fuzzy search** — Search uses `toLowerCase().includes()`. It won't handle typos, but it's fast, readable, and adds zero dependencies. For 4 workshops, it's more than enough.
-- **Skipped sorting** — Adding sort-by-date or sort-by-price would have needed a dropdown or extra state. It felt like over-engineering for this scope, so I left it out.
-- **`useMemo` for filtering** — Small win on a tiny dataset, but it's the right habit and the pattern works cleanly if the list ever grows.
-
----
-
-## Challenges
-
-The hardest part was the form validation hook.
-
-The original `handleChange` had a stale closure issue — it captured the `values` from when the component first rendered, so quick edits could overwrite each other. I fixed it by switching to functional `setValues(prev => ...)` updates and storing the validate function in a `useRef` so the callbacks don't need to be re-created on every render.
-
-The side effect of that fix was that error clearing also became reliable — errors update inside the same state setter call, so you never see a frame where the value is updated but a stale error is still showing.
+| Area | Change |
+|------|--------|
+| **Typography** | Switched to DM Sans (body) + DM Serif Display (headings) — legible on small screens |
+| **Colour system** | Semantic CSS variables with full dark-mode support |
+| **Mobile layout** | Cards go 1 → 2 → 3 columns; sticky nav; hamburger with Escape-to-close |
+| **Visual hierarchy** | Eyebrow text, display headings, muted subtitles, meta-card grid on detail page |
+| **Accessibility** | `aria-current`, `aria-label`, skip-to-main link, `:focus-visible` ring, `sr-only` text, `role` landmarks |
+| **Performance** | Route-level code splitting (`React.lazy` + `Suspense`), `will-change: transform` on sticky header, `scrollbar-gutter: stable` to prevent layout shift |
+| **SEO** | `<title>`, `<meta description>`, Open Graph tags, `lang="en"` on `<html>` |
+| **Form UX** | Per-field blur validation (stale-closure bug fixed), inline error messages, button spinner, success confirmation ID |
+| **Urgency UX** | "🔥 X spots left" chip on cards and detail page; "Sold out" disabled state |
+| **Reduced motion** | All animations disabled via `@media (prefers-reduced-motion: reduce)` |
 
 ---
 
-## Features Added
+## 💡 Reasoning (Required by FOSSEE)
 
-**Workshop List**
-- Real-time search — matches title, instructor, and excerpt
-- Level filter pills (All / Beginner / Intermediate / Advanced) — works together with search
-- Clear (✕) button inside the search input
-- "No workshops found" state — icon, message, fade-in animation, and a reset button
+### 1. What design principles guided your improvements?
 
-**Workshop Cards**
-- "🔥 N left" chip when ≤ 5 spots remain
-- Sold-out badge + disabled CTA
-- Subtle hover lift animation
-- 3-line excerpt clamp for consistent card heights
+Three principles drove every decision:
 
-**Workshop Details**
-- Meta info (date, instructor, duration, price) laid out in individual cards
-- Warning banner when spots are low
-- Graceful "not found" page with a back link
+**Mobile-first, content-first.** The task brief states that most users access the site
+on mobile devices. Every layout decision started at 320 px and scaled up — not the
+reverse. Typography sizes use `clamp()` to scale fluidly between breakpoints without
+media-query clutter.
 
-**Registration Form**
-- Blur validation (not on keystroke)
-- Errors clear in real time once fixed
-- Form locked during submission with a loading state
-- Success toast after registration
+**Progressive disclosure.** The workshop list shows only what a user needs to decide
+whether to click (title, level, date, instructor, a short excerpt). The full description
+and registration form are deferred to the detail page. This reduces cognitive load on
+the first screen.
 
-**Accessibility**
-- `aria-pressed` on filter buttons
-- `aria-live="polite"` on loading/empty states
-- `role="search"` and `role="group"` on the toolbar
-- Keyboard-friendly — focus rings, correct tab order, `tabIndex=-1` on disabled buttons
+**Accessibility as a baseline, not an afterthought.** WCAG 2.1 AA compliance was
+treated as a hard constraint: every interactive element has a visible focus state,
+every image has alt text, every icon has a screen-reader label, and keyboard
+navigation works end-to-end including hamburger close on `Escape`.
+
+### 2. How did you ensure responsiveness across devices?
+
+- **Fluid grid:** CSS `grid` with `repeat(auto-fill, minmax(...))` — no JavaScript,
+  no third-party grid library. Cards reflow naturally from 1 to 3 columns.
+- **Fluid type:** `clamp(var(--text-3xl), 5vw, var(--text-4xl))` on headings avoids
+  hard breakpoints for typography.
+- **Sticky navbar:** `position: sticky` + `will-change: transform` keeps the nav in
+  view on long pages without expensive JavaScript scroll listeners.
+- **Viewport meta:** `width=device-width, initial-scale=1` ensures correct pixel
+  density on retina screens.
+- **Touch targets:** All buttons and links have a minimum padding that meets the
+  48 × 48 px WCAG touch-target guideline.
+
+### 3. What trade-offs did you make between design and performance?
+
+| Decision | Trade-off |
+|----------|-----------|
+| Google Fonts (DM Sans + DM Serif) via `<link rel="preconnect">` | Adds ~1 external request, but `font-display: swap` and preconnect keep FCP unaffected in practice |
+| CSS Modules instead of Tailwind | Larger CSS bundle than utility-first, but zero runtime overhead and scoped by default — no class name collisions |
+| `React.lazy` + `Suspense` for page routes | Tiny shell bundle on first load; each page chunk loads on demand |
+| Mock data in page components | Avoids a real API call (keeping the task scope clean), but means data lives in JS — acceptable for a prototype |
+| No animation library | CSS transitions only (`transition`, `@keyframes`) — zero JS bundle cost, disabled automatically for users who prefer reduced motion |
+
+### 4. What was the most challenging part and how did you approach it?
+
+**The form validation stale-closure bug.** The original `useFormValidation` hook
+had a subtle React closure problem: `handleChange` captured `values` at the time the
+callback was created. Under rapid typing, validation ran against a snapshot of state
+from a previous render, producing wrong errors or missing them entirely.
+
+The fix was two-pronged:
+1. Use the functional form of `setValues(prev => ...)` so the update always runs
+   against the latest state, not the closed-over snapshot.
+2. Store the `validate` function and current `values` in a `useRef` that updates every
+   render — refs are always current, unlike closure variables. The callbacks themselves
+   (`handleChange`, `handleBlur`, `handleSubmit`) are then `useCallback` with an empty
+   dependency array, meaning they are created once and never cause child re-renders.
+
+This is a common React pitfall that is easy to miss in code review but has a real
+impact on user experience (wrong validation feedback feels broken).
 
 ---
 
-## Tech Stack
+## 🗂️ Project Structure
 
-| Tool | Why |
-|---|---|
-| React 18 | UI |
-| React Router v6 | Routing |
-| CSS Modules | Scoped styles without a CSS-in-JS library |
-| Vite | Fast dev server |
-| No UI component library | Everything built from scratch |
+```
+fossee-uiux-workshop-booking/
+├── frontend/
+│   ├── src/
+│   │   ├── styles/
+│   │   │   ├── variables.css      # Design tokens, dark mode, reduced-motion
+│   │   │   └── global.css         # Reset, focus ring, skip link, sr-only
+│   │   ├── hooks/
+│   │   │   └── useFormValidation.js
+│   │   ├── components/
+│   │   │   ├── Layout/            # Skip link, semantic landmarks
+│   │   │   ├── Navbar/            # Mobile hamburger, a11y, Escape-to-close
+│   │   │   ├── WorkshopCard/      # Badge colours, urgency chip
+│   │   │   └── RegistrationForm/  # Blur validation, error/success UI
+│   │   ├── pages/
+│   │   │   ├── WorkshopList/      # Hero header, responsive grid
+│   │   │   └── WorkshopDetails/   # Meta grid, sticky form, spots warning
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── index.html                 # SEO meta, og: tags, fonts
+│   ├── package.json
+│   └── vite.config.js
+├── Dockerfile                     # Multi-stage Nginx build
+├── docker-compose.yml
+├── nginx.conf                     # SPA routing, gzip, cache headers
+├── .dockerignore
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                 # Lint + build on every push/PR
+│       └── cd.yml                 # Docker build + push on merge to main
+├── screenshots/
+│   ├── before.png
+│   └── after.png
+└── README.md
+```
 
 ---
 
-## Running Locally
+## 🛠️ Setup Instructions
+
+### Prerequisites
+- Node.js ≥ 20
+- npm ≥ 9
+
+### Local development
 
 ```bash
-git clone <repo-url>
-cd FOSSEE/frontend
+# 1. Clone
+git clone https://github.com/joeljohngeorge8080/fossee-uiux-workshop-booking.git
+cd fossee-uiux-workshop-booking
 
+# 2. Install dependencies
+cd frontend
 npm install
+
+# 3. Start dev server
 npm run dev
+# → http://localhost:5173
 ```
 
-Opens at `http://localhost:5173`.
+### Production build
+
+```bash
+cd frontend
+npm run build
+npm run preview
+# → http://localhost:4173
+```
+
+### Docker (recommended for reviewers)
+
+```bash
+# Build and run with one command
+docker compose up --build
+
+# → http://localhost:3000
+```
 
 ---
 
-## Screenshots
+## ♿ Accessibility
 
-### Default State
-![All workshops shown with search and filter toolbar](./screenshots/workshop-list.png)
-
-### Search Filtered
-![Search results for "react"](./screenshots/search-filtered.png)
-
-### Empty State
-![No results found view](./screenshots/empty-state.png)
-
-### Workshop Details
-![Details page with meta cards and registration form](./screenshots/workshop-details.png)
-
-> Add images to a `/screenshots` folder and the paths above will work.
+- All interactive elements have visible `:focus-visible` outlines
+- Skip-to-main-content link for keyboard users
+- `aria-current="page"` on active nav links
+- `aria-label` / `aria-expanded` on hamburger button
+- `role="alert"` on form error and success messages
+- `sr-only` class for screen-reader-only text
+- Colour contrast ≥ 4.5:1 on all text/background pairs
 
 ---
 
-## Project Structure
+## 🏎️ Performance
 
-```
-frontend/src/
-├── components/
-│   ├── Layout/           # App shell
-│   ├── Navbar/           # Nav with active route highlight
-│   ├── WorkshopCard/     # Card with badge, chip, CTA
-│   ├── RegistrationForm/ # Form with validation
-│   ├── StatusMessage/    # Success/error block
-│   └── Toast/            # Post-submit notification
-├── hooks/
-│   └── useFormValidation.js
-├── pages/
-│   ├── WorkshopList/     # Search + filter + grid
-│   └── WorkshopDetails/  # Info + registration
-└── styles/               # Global CSS tokens
-```
+| Metric | Technique |
+|--------|-----------|
+| Route splitting | `React.lazy` + `Suspense` |
+| No layout shift | `scrollbar-gutter: stable` |
+| Smooth sticky nav | `will-change: transform` |
+| Font loading | `rel="preconnect"` + `font-display: swap` |
+| Reduced repaints | `React.memo` on `WorkshopCard` |
+| Reduced motion | `@media (prefers-reduced-motion: reduce)` |
+
+---
+
+## 📬 Contact
+
+Submitted for FOSSEE Python Screening Task — UI/UX Enhancement.
+Questions: pythonsupport@fossee.in

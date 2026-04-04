@@ -1,0 +1,19 @@
+# Run the production build locally with:
+#   docker compose up --build
+# Then open → http://localhost:3000
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    # Health check — Docker restarts the container if nginx dies
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

@@ -1,0 +1,25 @@
+# Node modules — rebuilt inside Docker
+frontend/node_modules
+
+# Vite build cache
+frontend/.vite
+
+# Local env files — never bake secrets into images
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# Git history — not needed in image
+.git
+.gitignore
+
+# Editor / OS artefacts
+.DS_Store
+*.suo
+*.swp
+.idea
+.vscode
+
+# CI/CD files — not needed at runtime
+.github
+screenshots
