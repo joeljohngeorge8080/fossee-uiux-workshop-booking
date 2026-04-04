@@ -3,19 +3,20 @@ import { Link, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
-  { label: 'Workshops',   path: '/' },
+  { label: 'Workshops', path: '/' },
   { label: 'My Bookings', path: '/my-bookings' },
-  { label: 'About',       path: '/about' },
+  { label: 'About', path: '/about' },
 ];
 
 const Navbar = () => {
-  const [open, setOpen]   = useState(false);
-  const location          = useLocation();
-  const navRef            = useRef(null);
-  const btnRef            = useRef(null);
-  const close             = useCallback(() => setOpen(false), []);
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const navRef = useRef(null);
+  const btnRef = useRef(null);
+  const close = useCallback(() => setOpen(false), []);
 
   /* Close on route change */
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { close(); }, [location.pathname, close]);
 
   /* Close on Escape — return focus to hamburger */

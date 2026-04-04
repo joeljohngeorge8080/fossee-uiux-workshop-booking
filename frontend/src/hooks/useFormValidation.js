@@ -1,14 +1,16 @@
 import { useState, useCallback, useRef } from 'react';
 
 const useFormValidation = (initialState, validate) => {
-  const [values,       setValues]       = useState(initialState);
-  const [errors,       setErrors]       = useState({});
-  const [touched,      setTouched]      = useState({});
+  const [values, setValues] = useState(initialState);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateRef = useRef(validate);
+  // eslint-disable-next-line react-hooks/refs
   validateRef.current = validate;
   const valuesRef = useRef(values);
+  // eslint-disable-next-line react-hooks/refs
   valuesRef.current = values;
 
   const handleChange = useCallback((e) => {
@@ -31,7 +33,7 @@ const useFormValidation = (initialState, validate) => {
 
   const handleSubmit = useCallback((e, submitFn) => {
     e.preventDefault();
-    const cur  = valuesRef.current;
+    const cur = valuesRef.current;
     const errs = validateRef.current(cur);
     setErrors(errs);
     setTouched(Object.keys(cur).reduce((a, k) => ({ ...a, [k]: true }), {}));

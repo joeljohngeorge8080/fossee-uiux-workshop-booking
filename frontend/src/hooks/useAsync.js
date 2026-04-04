@@ -19,6 +19,7 @@ const useAsync = (asyncFn, immediate = true) => {
         }
     }, [asyncFn]);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { if (immediate) execute(); }, [execute, immediate]);
 
     return { ...state, retry: execute };

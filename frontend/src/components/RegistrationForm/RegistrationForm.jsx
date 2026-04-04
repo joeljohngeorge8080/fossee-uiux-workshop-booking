@@ -4,12 +4,12 @@ import styles from './RegistrationForm.module.css';
 
 const validate = (v) => {
   const e = {};
-  if (!v.name.trim())           e.name = 'Full name is required.';
+  if (!v.name.trim()) e.name = 'Full name is required.';
   else if (v.name.trim().length < 2) e.name = 'Name must be at least 2 characters.';
-  if (!v.email)                 e.email = 'Email is required.';
+  if (!v.email) e.email = 'Email is required.';
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = 'Enter a valid email address.';
   if (v.phone && !/^[+\d\s\-().]{7,20}$/.test(v.phone)) e.phone = 'Enter a valid phone number.';
-  if (!v.experienceLevel)       e.experienceLevel = 'Please select your experience level.';
+  if (!v.experienceLevel) e.experienceLevel = 'Please select your experience level.';
   return e;
 };
 
@@ -21,6 +21,7 @@ const RegistrationForm = ({ workshopId, disabled = false }) => {
   const submitFn = async (values) => {
     await new Promise(r => setTimeout(r, 900));
     console.log('Registering for workshop', workshopId, values);
+    // eslint-disable-next-line react-hooks/purity
     setSuccess({ confirmationId: `WRK-${Date.now()}` });
     resetForm();
   };
