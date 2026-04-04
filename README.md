@@ -79,13 +79,13 @@ Below are comparisons between the original FOSSEE workshop booking UI and the im
 
 ## Design Decisions
 
-I followed three simple ideas throughout:
+I kept three things in mind while working on this:
 
-**Start from mobile.** The task brief says most users are on phones, so every layout decision started at 320px and scaled up. I used `clamp()` for font sizes so text scales smoothly without needing a bunch of media queries.
+I started designing for mobile first since most users are on phones. Every layout decision started at 320px and scaled up. I used `clamp()` for font sizes so text scales smoothly without needing a bunch of media queries.
 
-**Show less upfront.** The workshop list only shows what you need to decide whether to click — title, level, date, instructor, and a one-line description. Everything else (full description, registration form) is on the detail page. Less clutter on the first screen.
+I kept the list simple so users can quickly decide what to click — just the title, level, date, instructor, and a one-line description. The full details and registration form are on the detail page. With only 4 workshops, there's no need to overwhelm the first screen.
 
-**Accessibility isn't optional.** Every button and link has a visible focus ring. The hamburger menu closes on Escape and returns focus to the button. Form errors are announced to screen readers with `role="alert"`. I tried to follow WCAG 2.1 AA throughout.
+I made sure basic accessibility is handled — focus states, keyboard navigation, screen reader labels, that sort of thing. The hamburger menu closes on Escape and returns focus to the button. Form errors get announced with `role="alert"`. I tried to follow WCAG 2.1 AA where I could.
 
 ---
 
